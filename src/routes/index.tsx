@@ -106,19 +106,20 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Developers */}
-      <section id="developers" className="relative border-t border-border bg-background py-28 sm:py-36">
-        <div className="relative mx-auto max-w-6xl px-6 lg:px-10">
-          <SectionHeader eyebrow="The Team" title="Developers" />
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {developers.map((dev, i) => (
-              <DeveloperCard key={dev.name} dev={dev} index={i} />
-            ))}
+        {/* Developers */}
+        <section id="developers" className="relative border-t border-border py-28 sm:py-36">
+          <div className="relative mx-auto max-w-6xl px-6 lg:px-10">
+            <SectionHeader eyebrow="The Team" title="Developers" />
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {developers.map((dev, i) => (
+                <DeveloperCard key={dev.name} dev={dev} index={i} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <Footer />
+        <Footer />
+      </div>
     </main>
   );
 }
