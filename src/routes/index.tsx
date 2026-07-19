@@ -7,6 +7,7 @@ import { DownloadCard } from "@/components/DownloadCard";
 import { DeveloperCard, type Developer } from "@/components/DeveloperCard";
 import { Footer } from "@/components/Footer";
 import { ScrollProgress } from "@/components/ScrollProgress";
+import { InteractiveGrid } from "@/components/InteractiveGrid";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -73,14 +74,15 @@ function SectionHeader({ eyebrow, title }: { eyebrow: string; title: string }) {
 function LandingPage() {
   return (
     <main className="relative min-h-dvh bg-background text-foreground">
-      <ScrollProgress />
-      <Navbar />
+      <InteractiveGrid />
+      <div className="relative z-10">
+        <ScrollProgress />
+        <Navbar />
 
-      <Hero />
+        <Hero />
 
       {/* Downloads */}
-      <section id="downloads" className="relative border-t border-border bg-surface py-28 sm:py-36">
-        <div className="absolute inset-0 bg-grid opacity-30" aria-hidden="true" />
+      <section id="downloads" className="relative border-t border-border py-28 sm:py-36">
         <div className="relative mx-auto max-w-6xl px-6 lg:px-10">
           <SectionHeader eyebrow="Get the Build" title="Downloads" />
           <div className="grid gap-6 md:grid-cols-2">
