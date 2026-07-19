@@ -18,7 +18,7 @@ export function DownloadCard({ index, title, description, buttonLabel, href, ico
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.7, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -6 }}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-border bg-card p-8 transition-shadow duration-300 hover:border-accent/40 hover:shadow-[0_30px_60px_-30px_rgba(229,57,53,0.35)] sm:p-10"
+      className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-border bg-card p-8 transition-shadow duration-300 hover:border-accent/40 hover:shadow-[0_30px_60px_-30px_rgba(255,176,0,0.35)] sm:p-10"
     >
       <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
         <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-transparent" />
