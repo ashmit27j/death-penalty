@@ -17,12 +17,12 @@
 
 :root {
   --background: #070707;
-  --surface: #101010;
-  --card: #151515;
+  --surface: #0d0d0d;
+  --card: #131313;
   --foreground: #ffffff;
   --muted-foreground: #a0a0a0;
-  --accent: #e53935;
-  --accent-foreground: #ffffff;
+  --accent: #FFB000;
+  --accent-foreground: #0a0a0a;
   --border: rgba(255, 255, 255, 0.08);
 }
 
@@ -70,6 +70,26 @@ body {
     linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
   background-size: 64px 64px;
+}
+
+/* Subtle graph-paper background — fixed, seamless */
+.bg-graph {
+  background-color: var(--background);
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: -1px -1px;
+}
+
+/* Accent-colored grid used as the "energized" layer under a radial mask */
+.bg-graph-accent {
+  background-image:
+    linear-gradient(to right, rgba(255, 176, 0, 0.55) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 176, 0, 0.55) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: -1px -1px;
+  filter: drop-shadow(0 0 6px rgba(255, 176, 0, 0.45));
 }
 
 /* Faint noise */
