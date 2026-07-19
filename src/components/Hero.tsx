@@ -75,7 +75,7 @@ export function Hero() {
           variants={item}
           className="mt-16 w-full max-w-5xl"
         >
-          <div className="relative overflow-hidden rounded-xl border border-border bg-card shadow-[0_30px_120px_-30px_rgba(229,57,53,0.25)]">
+          <div className="relative overflow-hidden rounded-xl border border-border bg-card shadow-[0_30px_120px_-30px_rgba(255,176,0,0.25)]">
             <div className="aspect-video w-full">
               <video
                 className="h-full w-full object-cover"

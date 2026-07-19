@@ -35,7 +35,7 @@ export function Navbar() {
           href="#home"
           className="flex items-center gap-2 font-display text-sm font-semibold uppercase tracking-[0.28em] text-foreground"
         >
-          <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_12px_rgba(229,57,53,0.7)]" />
+          <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_12px_rgba(255,176,0,0.7)]" />
           Death Penalty
         </a>
 
