@@ -23,7 +23,16 @@ export function InteractiveGrid() {
     const prefersReduced =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) return;
+
+    const paint = (x: number, y: number) => {
+      if (glowRef.current) {
+        glowRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
+      if (maskRef.current) {
+        maskRef.current.style.setProperty("--mx", `${x}px`);
+        maskRef.current.style.setProperty("--my", `${y}px`);
+      }
+    };
 
     const onMove = (e: PointerEvent) => {
       target.current.x = e.clientX;
@@ -35,6 +44,8 @@ export function InteractiveGrid() {
         if (glowRef.current) glowRef.current.style.opacity = "1";
         if (maskRef.current) maskRef.current.style.opacity = "1";
       }
+      // Reduced motion: no lerp/rAF smoothing — snap directly to the cursor.
+      if (prefersReduced) paint(e.clientX, e.clientY);
     };
     const onLeave = () => {
       active.current = false;
@@ -51,20 +62,14 @@ export function InteractiveGrid() {
       current.current.x = cx + (tx - cx) * 0.12;
       current.current.y = cy + (ty - cy) * 0.12;
 
-      if (glowRef.current) {
-        glowRef.current.style.transform = `translate3d(${current.current.x}px, ${current.current.y}px, 0)`;
-      }
-      if (maskRef.current) {
-        maskRef.current.style.setProperty("--mx", `${current.current.x}px`);
-        maskRef.current.style.setProperty("--my", `${current.current.y}px`);
-      }
+      paint(current.current.x, current.current.y);
       rafId.current = requestAnimationFrame(tick);
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerleave", onLeave);
     document.addEventListener("mouseleave", onLeave);
-    rafId.current = requestAnimationFrame(tick);
+    if (!prefersReduced) rafId.current = requestAnimationFrame(tick);
 
     return () => {
       window.removeEventListener("pointermove", onMove);
@@ -73,6 +78,7 @@ export function InteractiveGrid() {
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
   }, []);
+
 
   return (
     <div
