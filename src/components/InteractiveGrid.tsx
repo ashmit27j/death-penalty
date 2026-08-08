@@ -78,10 +78,10 @@ export function InteractiveGrid() {
     <div
       ref={rootRef}
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+      className="pointer-events-none fixed inset-0 z-[60] overflow-hidden mix-blend-screen"
     >
       {/* Base subtle graph-paper grid */}
-      <div className="absolute inset-0 bg-graph" />
+      <div className="absolute inset-0 bg-graph-lines" />
 
       {/* Energized grid: same lines but in accent color, revealed only near cursor via a radial mask */}
       <div
@@ -94,6 +94,7 @@ export function InteractiveGrid() {
             "radial-gradient(220px 220px at var(--mx, -9999px) var(--my, -9999px), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0) 75%)",
         }}
       />
+
 
       {/* Soft bloom halo that follows the cursor */}
       <div
