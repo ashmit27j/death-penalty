@@ -131,7 +131,7 @@ export function InteractiveGrid() {
           The inner grid counter-translates so lines stay viewport-locked. */}
       <div
         ref={maskRef}
-        className="absolute left-0 top-0 opacity-0 transition-opacity duration-300 will-change-transform"
+        className="absolute left-0 top-0 overflow-hidden opacity-0 transition-opacity duration-300 will-change-transform"
         style={{
           width: SIZE,
           height: SIZE,
@@ -155,6 +155,7 @@ export function InteractiveGrid() {
         style={{
           background:
             "radial-gradient(circle, rgba(255,176,0,0.18) 0%, rgba(255,176,0,0.08) 25%, rgba(255,176,0,0) 65%)",
+          filter: "blur(12px)",
         }}
       />
     </div>
