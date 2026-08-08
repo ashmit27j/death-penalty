@@ -35,6 +35,8 @@ export function Hero() {
           src={heroBg}
           alt=""
           aria-hidden="true"
+          decoding="async"
+          fetchPriority="high"
           className="h-full w-full object-cover opacity-40"
         />
         <div className="absolute inset-0 bg-grid opacity-60" />
@@ -81,7 +83,7 @@ export function Hero() {
                 className="h-full w-full object-cover"
                 src={PLACEHOLDER_VIDEO}
                 controls
-                preload="metadata"
+                preload="none"
                 playsInline
                 poster={heroBg}
               />

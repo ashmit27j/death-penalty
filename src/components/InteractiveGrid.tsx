@@ -4,33 +4,74 @@ import { useEffect, useRef } from "react";
  * Full-viewport fixed graph-paper background with an interactive
  * mouse-follow radial glow that illuminates nearby grid lines.
  *
- * - Grid: subtle dark-gray lines (fixed to viewport, seamless).
- * - Glow: soft radial gradient in #FFB000, lerp-smoothed via rAF.
- * - Respects prefers-reduced-motion.
+ * Perf notes:
+ * - The "energized" accent grid is a small 440x440 masked layer that is
+ *   translated to the cursor, with an inner counter-translated grid so the
+ *   lines stay locked to the viewport. Everything moves via `transform`
+ *   only (GPU compositing) — no per-frame full-viewport mask repaint.
+ * - The rAF loop parks itself when the glow has settled and restarts on
+ *   pointer movement, so an idle page schedules zero frames.
+ * - Respects prefers-reduced-motion (snaps instead of lerping).
  */
+const R = 220; // glow radius, matches the original mask
+const SIZE = R * 2;
+
 export function InteractiveGrid() {
-  const rootRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const maskRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
-  // target (raw mouse) and current (lerped) positions
   const target = useRef({ x: -9999, y: -9999 });
   const current = useRef({ x: -9999, y: -9999 });
   const active = useRef(false);
   const rafId = useRef<number | null>(null);
 
   useEffect(() => {
-    const prefersReduced =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const paint = (x: number, y: number) => {
       if (glowRef.current) {
         glowRef.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
       }
       if (maskRef.current) {
-        maskRef.current.style.setProperty("--mx", `${x}px`);
-        maskRef.current.style.setProperty("--my", `${y}px`);
+        maskRef.current.style.transform = `translate3d(${x - R}px, ${y - R}px, 0)`;
+      }
+      if (gridRef.current) {
+        // counter-translate so the accent grid stays aligned to the viewport grid
+        gridRef.current.style.transform = `translate3d(${R - x}px, ${R - y}px, 0)`;
+      }
+    };
+
+    const stop = () => {
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+        rafId.current = null;
+      }
+    };
+
+    const tick = () => {
+      const cx = current.current.x;
+      const cy = current.current.y;
+      const dx = target.current.x - cx;
+      const dy = target.current.y - cy;
+
+      if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+        current.current.x = target.current.x;
+        current.current.y = target.current.y;
+        paint(current.current.x, current.current.y);
+        rafId.current = null; // settled: park the loop
+        return;
+      }
+
+      current.current.x = cx + dx * 0.12;
+      current.current.y = cy + dy * 0.12;
+      paint(current.current.x, current.current.y);
+      rafId.current = requestAnimationFrame(tick);
+    };
+
+    const start = () => {
+      if (rafId.current === null && !document.hidden) {
+        rafId.current = requestAnimationFrame(tick);
       }
     };
 
@@ -44,62 +85,68 @@ export function InteractiveGrid() {
         if (glowRef.current) glowRef.current.style.opacity = "1";
         if (maskRef.current) maskRef.current.style.opacity = "1";
       }
-      // Reduced motion: no lerp/rAF smoothing — snap directly to the cursor.
-      if (prefersReduced) paint(e.clientX, e.clientY);
+      if (prefersReduced) {
+        current.current.x = e.clientX;
+        current.current.y = e.clientY;
+        paint(e.clientX, e.clientY);
+      } else {
+        start();
+      }
     };
+
     const onLeave = () => {
       active.current = false;
+      stop();
       if (glowRef.current) glowRef.current.style.opacity = "0";
       if (maskRef.current) maskRef.current.style.opacity = "0";
     };
 
-    const tick = () => {
-      const cx = current.current.x;
-      const cy = current.current.y;
-      const tx = target.current.x;
-      const ty = target.current.y;
-      // lerp for smoothing
-      current.current.x = cx + (tx - cx) * 0.12;
-      current.current.y = cy + (ty - cy) * 0.12;
-
-      paint(current.current.x, current.current.y);
-      rafId.current = requestAnimationFrame(tick);
+    const onVisibility = () => {
+      if (document.hidden) stop();
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
-    window.addEventListener("pointerleave", onLeave);
-    document.addEventListener("mouseleave", onLeave);
-    if (!prefersReduced) rafId.current = requestAnimationFrame(tick);
+    window.addEventListener("pointerleave", onLeave, { passive: true });
+    document.addEventListener("mouseleave", onLeave, { passive: true });
+    document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerleave", onLeave);
       document.removeEventListener("mouseleave", onLeave);
-      if (rafId.current) cancelAnimationFrame(rafId.current);
+      document.removeEventListener("visibilitychange", onVisibility);
+      stop();
     };
   }, []);
 
-
   return (
     <div
-      ref={rootRef}
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
     >
       {/* Base subtle graph-paper grid */}
       <div className="absolute inset-0 bg-graph" />
 
-      {/* Energized grid: same lines but in accent color, revealed only near cursor via a radial mask */}
+      {/* Energized grid: small masked window that follows the cursor.
+          The inner grid counter-translates so lines stay viewport-locked. */}
       <div
         ref={maskRef}
-        className="absolute inset-0 bg-graph-accent opacity-0 transition-opacity duration-300"
+        className="absolute left-0 top-0 overflow-hidden opacity-0 transition-opacity duration-300 will-change-transform"
         style={{
+          width: SIZE,
+          height: SIZE,
+          transform: `translate3d(-9999px, -9999px, 0)`,
           WebkitMaskImage:
-            "radial-gradient(220px 220px at var(--mx, -9999px) var(--my, -9999px), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0) 75%)",
+            "radial-gradient(220px 220px at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0) 75%)",
           maskImage:
-            "radial-gradient(220px 220px at var(--mx, -9999px) var(--my, -9999px), rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0) 75%)",
+            "radial-gradient(220px 220px at 50% 50%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0) 75%)",
         }}
-      />
+      >
+        <div
+          ref={gridRef}
+          className="bg-graph-accent absolute left-0 top-0 h-[100vh] w-[100vw] will-change-transform"
+        />
+      </div>
 
       {/* Soft bloom halo that follows the cursor */}
       <div
