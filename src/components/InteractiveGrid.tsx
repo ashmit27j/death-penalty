@@ -154,8 +154,8 @@ export function InteractiveGrid() {
         className="absolute left-0 top-0 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 opacity-0 transition-opacity duration-300 will-change-transform"
         style={{
           background:
-            "radial-gradient(circle, rgba(255,176,0,0.18) 0%, rgba(255,176,0,0.08) 25%, rgba(255,176,0,0) 65%)",
-          filter: "blur(12px)",
+            "radial-gradient(circle, rgba(255,176,0,0.07) 0%, rgba(255,176,0,0.03) 30%, rgba(255,176,0,0) 65%)",
+          filter: "blur(16px)",
         }}
       />
     </div>

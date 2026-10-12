@@ -3,9 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 const links = [
-  { label: "Home", href: "#home" },
-  { label: "Downloads", href: "#downloads" },
-  { label: "Developers", href: "#developers" },
+  { label: "Home", href: "#home", n: "01" },
+  { label: "Downloads", href: "#downloads", n: "02" },
+  { label: "Developers", href: "#developers", n: "03" },
 ];
 
 export function Navbar() {
@@ -21,31 +21,32 @@ export function Navbar() {
 
   return (
     <motion.header
-      initial={{ y: -32, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className={`fixed inset-x-0 top-0 z-50 transition-colors duration-200 ${
         scrolled
-          ? "backdrop-blur-xl bg-[#070707]/70 border-b border-border"
+          ? "backdrop-blur-md bg-background/80 border-b border-border"
           : "bg-transparent border-b border-transparent"
       }`}
     >
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-10">
         <a
           href="#home"
-          className="flex items-center gap-2 font-display text-sm font-semibold uppercase tracking-[0.28em] text-foreground"
+          className="flex min-h-11 items-center gap-2 font-display text-sm font-semibold tracking-[-0.01em] text-foreground"
         >
-          <span className="h-2 w-2 rounded-full bg-accent shadow-[0_0_12px_rgba(255,176,0,0.7)]" />
+          <span className="h-2 w-2 bg-accent" />
           Death Penalty
         </a>
 
-        <ul className="hidden items-center gap-10 md:flex">
+        <ul className="hidden items-center gap-8 md:flex">
           {links.map((l) => (
             <li key={l.href}>
               <a
                 href={l.href}
-                className="text-sm uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
+                className="group flex items-center gap-2 font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground transition-colors duration-200 hover:text-foreground"
               >
+                <span className="transition-colors duration-200 group-hover:text-accent">{l.n}</span>
                 {l.label}
               </a>
             </li>

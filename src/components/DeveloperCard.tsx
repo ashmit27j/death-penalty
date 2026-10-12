@@ -1,57 +1,37 @@
-import { motion } from "framer-motion";
 import { Github, Linkedin } from "lucide-react";
+import { Reveal } from "@/components/IndexLabel";
+import type { Developer } from "@/config/site";
 
-export interface Developer {
-  name: string;
-  role: string;
-  github: string;
-  linkedin: string;
-}
+export type { Developer };
 
 export function DeveloperCard({ dev, index }: { dev: Developer; index: number }) {
-  const initials = dev.name
-    .split(" ")
-    .map((s) => s[0])
-    .join("")
-    .slice(0, 2);
+  const initials = dev.name.split(" ").map((s) => s[0]).join("").slice(0, 2);
+  const links = [
+    { href: dev.github, label: "GitHub", Icon: Github },
+    { href: dev.linkedin, label: "LinkedIn", Icon: Linkedin },
+  ].filter((l) => l.href);
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.6, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -4 }}
-      className="group flex flex-col items-center rounded-xl border border-border bg-card p-8 text-center transition-colors duration-300 hover:border-accent/40"
-    >
-      <div className="relative mb-6 h-24 w-24">
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-accent/40 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100" />
-        <div className="relative flex h-full w-full items-center justify-center rounded-full border border-border bg-[#0c0c0c] font-display text-xl font-semibold tracking-wider text-foreground">
-          {initials}
+    <Reveal delay={index * 0.05}>
+      <article className="glass group flex h-full flex-col transition-colors duration-200 hover:border-border-strong">
+        <div className="flex aspect-[4/3] items-center justify-center border-b border-border bg-surface/60">
+          <span className="font-display text-5xl font-bold tracking-[-0.04em] text-muted-foreground" aria-hidden>{initials}</span>
         </div>
-      </div>
-
-      <h3 className="font-display text-xl font-semibold text-foreground">{dev.name}</h3>
-      <p className="mt-2 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-        {dev.role}
-      </p>
-
-      <div className="mt-6 flex items-center gap-3">
-        <a
-          href={dev.github}
-          aria-label={`${dev.name} on GitHub`}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-accent hover:text-accent"
-        >
-          <Github size={16} />
-        </a>
-        <a
-          href={dev.linkedin}
-          aria-label={`${dev.name} on LinkedIn`}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-accent hover:text-accent"
-        >
-          <Linkedin size={16} />
-        </a>
-      </div>
-    </motion.article>
+        <div className="flex flex-1 flex-col p-6">
+          <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground transition-colors duration-200 group-hover:text-accent">0{index + 1}</span>
+          <h3 className="mt-3 font-display text-xl font-semibold tracking-[-0.02em] text-foreground">{dev.name}</h3>
+          <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.06em] text-muted-foreground">{dev.role}</p>
+          {links.length > 0 && (
+            <div className="mt-6 flex gap-2">
+              {links.map(({ href, label, Icon }) => (
+                <a key={label} href={href} aria-label={`${dev.name} on ${label}`} className="inline-flex h-11 w-11 items-center justify-center rounded-[2px] border border-border text-muted-foreground transition-colors duration-200 hover:border-border-strong hover:text-foreground">
+                  <Icon size={16} />
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      </article>
+    </Reveal>
   );
 }

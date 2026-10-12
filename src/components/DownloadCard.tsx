@@ -1,51 +1,51 @@
-import { motion } from "framer-motion";
-import type { ReactNode } from "react";
+import { ArrowLink, Reveal } from "@/components/IndexLabel";
 
 interface DownloadCardProps {
   index: number;
+  category: string;
   title: string;
   description: string;
-  buttonLabel: string;
+  status: string;
+  tags: string[];
+  meta: { label: string; value: string }[];
+  ctaLabel: string;
   href: string;
-  icon: ReactNode;
 }
 
-export function DownloadCard({ index, title, description, buttonLabel, href, icon }: DownloadCardProps) {
+export function DownloadCard({ index, category, title, description, status, tags, meta, ctaLabel, href }: DownloadCardProps) {
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.7, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -6 }}
-      className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-border bg-card p-8 transition-shadow duration-300 hover:border-accent/40 hover:shadow-[0_30px_60px_-30px_rgba(255,176,0,0.35)] sm:p-10"
-    >
-      <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-        <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-transparent" />
-      </div>
-
-      <div className="relative">
-        <div className="mb-8 flex items-center justify-between">
-          <span className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground">
-            0{index + 1} / Build
-          </span>
-          <div className="text-accent">{icon}</div>
+    <Reveal delay={index * 0.05}>
+      <article className="glass group flex h-full flex-col p-6 transition-colors duration-200 hover:border-border-strong sm:p-8">
+        <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.08em]">
+          <span className="text-muted-foreground transition-colors duration-200 group-hover:text-accent">0{index + 1}</span>
+          <span className="text-muted-foreground">{category}</span>
         </div>
-        <h3 className="font-display text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-          {title}
-        </h3>
-        <p className="mt-4 max-w-md text-sm text-muted-foreground sm:text-base">
-          {description}
-        </p>
-      </div>
+        <h3 className="mt-10 font-display text-3xl font-semibold tracking-[-0.03em] text-foreground sm:text-4xl">{title}</h3>
+        <p className="mt-3 max-w-md text-[15px] leading-relaxed text-muted-foreground">{description}</p>
 
-      <a
-        href={href}
-        className="relative mt-10 inline-flex w-full items-center justify-between overflow-hidden rounded-md border border-border bg-[#0c0c0c] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-foreground transition-colors hover:border-accent hover:text-accent"
-      >
-        <span>{buttonLabel}</span>
-        <span aria-hidden className="ml-4 transition-transform group-hover:translate-x-1">→</span>
-      </a>
-    </motion.article>
+        <div className="mt-6 flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-2 rounded-[2px] border border-border px-2 py-1 font-mono text-[11px] uppercase tracking-[0.06em] text-foreground">
+            <span className="h-1.5 w-1.5 bg-accent" />
+            {status}
+          </span>
+          {tags.map((t) => (
+            <span key={t} className="rounded-[2px] border border-border px-2 py-1 font-mono text-[11px] uppercase tracking-[0.06em] text-muted-foreground">{t}</span>
+          ))}
+        </div>
+
+        <dl className="mt-8 grid grid-cols-3 border-t border-border pt-4 font-mono text-[11px] uppercase tracking-[0.06em]">
+          {meta.map((m) => (
+            <div key={m.label}>
+              <dt className="text-muted-foreground">{m.label}</dt>
+              <dd className="mt-1 text-foreground">{m.value}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className="mt-auto border-t border-border pt-4">
+          <ArrowLink href={href}>{ctaLabel}</ArrowLink>
+        </div>
+      </article>
+    </Reveal>
   );
 }
